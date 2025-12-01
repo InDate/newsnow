@@ -4,6 +4,7 @@ import type { SourceID } from "@shared/types"
 import { NavBar } from "../navbar"
 import { Menu } from "./menu"
 import { currentSourcesAtom, goToTopAtom } from "~/atoms"
+import { useFilterModal } from "~/hooks/useFilterModal"
 
 function GoTop() {
   const { ok, fn: goToTop } = useAtomValue(goToTopAtom)
@@ -20,6 +21,13 @@ function GoTop() {
 function Github() {
   return (
     <button type="button" title="Github" className="i-ph:github-logo-duotone btn" onClick={() => window.open(Homepage)} />
+  )
+}
+
+function Filter() {
+  const { open } = useFilterModal()
+  return (
+    <button type="button" title="Content Filters" className="i-ph:funnel-duotone btn" onClick={() => open()} />
   )
 }
 
@@ -71,6 +79,7 @@ export function Header() {
       <span className="justify-self-end flex gap-2 items-center text-xl text-primary-600 dark:text-primary">
         <GoTop />
         <Refresh />
+        <Filter />
         <Github />
         <Menu />
       </span>

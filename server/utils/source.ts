@@ -1,9 +1,10 @@
 import process from "node:process"
 import type { AllSourceID } from "@shared/types"
 import defu from "defu"
-import type { RSSHubOption, RSSHubInfo as RSSHubResponse, SourceGetter, SourceOption } from "#/types"
+import type { PaginatedResult, PaginatedSourceGetter, PaginationParams, RSSHubOption, RSSHubInfo as RSSHubResponse, SourceGetter, SourceOption } from "#/types"
 
 type R = Partial<Record<AllSourceID, SourceGetter>>
+type PR = Partial<Record<AllSourceID, PaginatedSourceGetter>>
 export function defineSource(source: SourceGetter): SourceGetter
 export function defineSource(source: R): R
 export function defineSource(source: SourceGetter | R): SourceGetter | R {
@@ -53,4 +54,92 @@ export function proxySource(proxyUrl: string, source: SourceGetter) {
         return data.items
       })
     : source
+}
+
+/**
+ * Define a paginated source that supports fetching multiple pages
+ */
+export function definePaginatedSource(source: PaginatedSourceGetter): PaginatedSourceGetter
+export function definePaginatedSource(source: PR): PR
+export function definePaginatedSource(source: PaginatedSourceGetter | PR): PaginatedSourceGetter | PR {
+  return source
+}
+
+/**
+ * Helper to create a paginated source from offset-based API
+ */
+export function defineOffsetPaginatedSource(
+  fetcher: (offset: number, limit: number) => Promise<{ items: any[], hasMore?: boolean }>,
+  mapper: (item: any) => { title: string, url: string, id: string | number, pubDate?: string | number, extra?: any },
+  defaultLimit = 30,
+): PaginatedSourceGetter {
+  return async (params?: PaginationParams): Promise<PaginatedResult> => {
+    const offset = params?.offset ?? 0
+    const limit = params?.limit ?? defaultLimit
+    const result = await fetcher(offset, limit)
+    const items = result.items.map(mapper)
+    const hasMore = result.hasMore ?? items.length >= limit
+    return {
+      items,
+      nextOffset: hasMore ? offset + limit : undefined,
+      hasMore,
+    }
+  }
+}
+
+/**
+ * Helper to create a paginated source from page-based API
+ */
+export function definePagePaginatedSource(
+  fetcher: (page: number, limit: number) => Promise<{ items: any[], hasMore?: boolean }>,
+  mapper: (item: any) => { title: string, url: string, id: string | number, pubDate?: string | number, extra?: any },
+  defaultLimit = 30,
+): PaginatedSourceGetter {
+  return async (params?: PaginationParams): Promise<PaginatedResult> => {
+    const page = params?.page ?? 1
+    const limit = params?.limit ?? defaultLimit
+    const result = await fetcher(page, limit)
+    const items = result.items.map(mapper)
+    const hasMore = result.hasMore ?? items.length >= limit
+    return {
+      items,
+      nextPage: hasMore ? page + 1 : undefined,
+      hasMore,
+    }
+  }
+}
+
+/**
+ * Helper to create a paginated source from cursor-based API
+ */
+export function defineCursorPaginatedSource(
+  fetcher: (cursor: string | undefined, limit: number) => Promise<{ items: any[], nextCursor?: string }>,
+  mapper: (item: any) => { title: string, url: string, id: string | number, pubDate?: string | number, extra?: any },
+  defaultLimit = 30,
+): PaginatedSourceGetter {
+  return async (params?: PaginationParams): Promise<PaginatedResult> => {
+    const cursor = params?.cursor
+    const limit = params?.limit ?? defaultLimit
+    const result = await fetcher(cursor, limit)
+    const items = result.items.map(mapper)
+    return {
+      items,
+      nextCursor: result.nextCursor,
+      hasMore: !!result.nextCursor,
+    }
+  }
+}
+
+/**
+ * Wrap a standard SourceGetter as a non-paginated PaginatedSourceGetter
+ * Used for backward compatibility
+ */
+export function wrapAsNonPaginated(getter: SourceGetter): PaginatedSourceGetter {
+  return async (): Promise<PaginatedResult> => {
+    const items = await getter()
+    return {
+      items,
+      hasMore: false,
+    }
+  }
 }

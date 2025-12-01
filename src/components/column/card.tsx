@@ -5,8 +5,8 @@ import { useWindowSize } from "react-use"
 import { forwardRef, useImperativeHandle } from "react"
 import { OverlayScrollbar } from "../common/overlay-scrollbar"
 import { safeParseString } from "~/utils"
-import { useFilteredItems } from "~/hooks/useFilter"
 import { useFilterModal } from "~/hooks/useFilterModal"
+import { filterConfigAtom } from "~/atoms/filterAtom"
 
 export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
   id: SourceID
@@ -54,19 +54,41 @@ export const CardWrapper = forwardRef<HTMLElement, ItemsProps>(({ id, isDragging
 
 function NewsCard({ id, setHandleRef }: NewsCardProps) {
   const { refresh } = useRefetch()
+  const filterConfig = useAtomValue(filterConfigAtom)
+
+  // Get applicable filter rules for this source
+  const filterRules = useMemo(() => {
+    const globalRules = filterConfig.globalRules.filter(r => r.enabled)
+    const sourceRules = (filterConfig.sourceRules[id] ?? []).filter(r => r.enabled)
+    return [...globalRules, ...sourceRules]
+  }, [filterConfig, id])
+
+  // Create a stable key for filters to include in queryKey
+  const filterKey = useMemo(() => {
+    if (filterRules.length === 0) return ""
+    return JSON.stringify(filterRules.map(r => ({ p: r.pattern, t: r.type })))
+  }, [filterRules])
+
   const { data, isFetching, isError } = useQuery({
-    queryKey: ["source", id],
+    queryKey: ["source", id, filterKey],
     queryFn: async ({ queryKey }) => {
       const id = queryKey[1] as SourceID
       let url = `/s?id=${id}`
       const headers: Record<string, any> = {}
+
+      // Add filter parameter if we have active filters
+      if (filterRules.length > 0) {
+        const filterParam = encodeURIComponent(JSON.stringify(filterRules))
+        url += `&filter=${filterParam}`
+      }
+
       if (refetchSources.has(id)) {
-        url = `/s?id=${id}&latest`
+        url += url.includes("?") ? "&latest" : "?latest"
         const jwt = safeParseString(localStorage.getItem("jwt"))
         if (jwt) headers.Authorization = `Bearer ${jwt}`
         refetchSources.delete(id)
-      } else if (cacheSources.has(id)) {
-        // wait animation
+      } else if (cacheSources.has(id) && filterRules.length === 0) {
+        // Only use cache if no filters (filtered results should always be fresh)
         await delay(200)
         return cacheSources.get(id)
       }
@@ -105,7 +127,6 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
   })
 
   const { isFocused, toggleFocus } = useFocusWith(id)
-  const filteredItems = useFilteredItems(data?.items, id)
   const { open: openFilterModal } = useFilterModal()
 
   return (
@@ -173,7 +194,7 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
         defer
       >
         <div className={$("transition-opacity-500", isFetching && "op-20")}>
-          {!!filteredItems?.length && (sources[id].type === "hottest" ? <NewsListHot items={filteredItems} /> : <NewsListTimeLine items={filteredItems} />)}
+          {!!data?.items?.length && (sources[id].type === "hottest" ? <NewsListHot items={data.items} /> : <NewsListTimeLine items={data.items} />)}
         </div>
       </OverlayScrollbar>
     </>

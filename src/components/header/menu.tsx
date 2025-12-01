@@ -1,5 +1,4 @@
 import { motion } from "framer-motion"
-import { useFilterModal } from "~/hooks/useFilterModal"
 
 // function ThemeToggle() {
 //   const { isDark, toggleDark } = useDark()
@@ -15,7 +14,6 @@ import { useFilterModal } from "~/hooks/useFilterModal"
 
 export function Menu() {
   const { loggedIn, login, logout, userInfo, enableLogin } = useLogin()
-  const { open: openFilterModal } = useFilterModal()
   const [shown, show] = useState(false)
   return (
     <span className="relative" onMouseEnter={() => show(true)} onMouseLeave={() => show(false)}>
@@ -67,10 +65,6 @@ export function Menu() {
                     </li>
                   ))}
               {/* <ThemeToggle /> */}
-              <li onClick={openFilterModal} className="cursor-pointer [&_*]:cursor-pointer transition-all">
-                <span className="i-ph:funnel-duotone inline-block" />
-                <span>Content Filters</span>
-              </li>
               <li onClick={() => window.open(Homepage)} className="cursor-pointer [&_*]:cursor-pointer transition-all">
                 <span className="i-ph:github-logo-duotone inline-block" />
                 <span>Star on Github </span>

@@ -64,3 +64,29 @@ export interface SourceOption {
 }
 
 export type SourceGetter = () => Promise<NewsItem[]>
+
+export interface PaginationParams {
+  page?: number
+  offset?: number
+  cursor?: string
+  limit?: number
+}
+
+export interface PaginatedResult {
+  items: NewsItem[]
+  nextPage?: number
+  nextOffset?: number
+  nextCursor?: string
+  hasMore: boolean
+}
+
+export type PaginatedSourceGetter = (params?: PaginationParams) => Promise<PaginatedResult>
+
+export interface SourceGetterConfig {
+  /** Standard getter for backwards compatibility */
+  getter?: SourceGetter
+  /** Paginated getter for filter support */
+  paginatedGetter?: PaginatedSourceGetter
+  /** Default items per page */
+  pageSize?: number
+}
