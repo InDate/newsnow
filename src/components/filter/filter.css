@@ -1,0 +1,236 @@
+.filter-header {
+  --at-apply: flex justify-between items-center p-4 border-b border-neutral-400/20;
+}
+
+.filter-title {
+  --at-apply: text-lg font-bold;
+}
+
+.filter-close {
+  --at-apply: p-1 rounded hover:bg-neutral-400/20 transition-colors;
+}
+
+.filter-tabs {
+  --at-apply: flex gap-2 p-4 border-b border-neutral-400/10;
+}
+
+.filter-tab {
+  --at-apply: px-4 py-2 rounded-lg text-sm font-medium transition-colors;
+  --at-apply: bg-neutral-400/10 hover:bg-neutral-400/20;
+}
+
+.filter-tab.active {
+  --at-apply: bg-primary text-white;
+}
+
+.filter-content {
+  --at-apply: p-4 max-h-[60vh] overflow-y-auto;
+}
+
+/* Simple Mode */
+.simple-mode {
+  --at-apply: flex flex-col gap-6;
+}
+
+.filter-section {
+  --at-apply: flex flex-col gap-2;
+}
+
+.filter-label {
+  --at-apply: flex items-center gap-2 text-sm font-medium op-80;
+}
+
+.filter-tags {
+  --at-apply: flex flex-wrap gap-2 p-3 bg-neutral-400/10 rounded-lg min-h-12;
+}
+
+.filter-tag {
+  --at-apply: flex items-center gap-1 px-2 py-1 rounded-md text-sm;
+}
+
+.filter-tag.exclude {
+  --at-apply: bg-red-500/20 text-red-400;
+}
+
+.filter-tag.include {
+  --at-apply: bg-green-500/20 text-green-400;
+}
+
+.filter-tag button {
+  --at-apply: ml-1 p-0.5 rounded hover:bg-black/20 transition-colors;
+}
+
+.filter-input {
+  --at-apply: flex-1 min-w-32 bg-transparent outline-none text-sm placeholder:op-50;
+}
+
+.filter-hint {
+  --at-apply: text-xs op-60 mt-2;
+}
+
+.filter-hint kbd {
+  --at-apply: px-1.5 py-0.5 bg-neutral-400/20 rounded text-xs;
+}
+
+/* Advanced Mode */
+.advanced-mode {
+  --at-apply: flex flex-col gap-4;
+}
+
+.rules-list {
+  --at-apply: flex flex-col gap-2;
+}
+
+.no-rules {
+  --at-apply: text-center op-60 py-8;
+}
+
+.rule-item {
+  --at-apply: flex items-center gap-2 p-2 bg-neutral-400/10 rounded-lg overflow-hidden;
+}
+
+.rule-toggle {
+  --at-apply: relative inline-block w-10 h-5;
+}
+
+.rule-toggle input {
+  --at-apply: opacity-0 w-0 h-0;
+}
+
+.toggle-slider {
+  --at-apply: absolute inset-0 bg-neutral-400/30 rounded-full cursor-pointer transition-colors;
+}
+
+.toggle-slider::before {
+  content: "";
+  --at-apply: absolute h-4 w-4 left-0.5 top-0.5 bg-white rounded-full transition-transform;
+}
+
+.rule-toggle input:checked + .toggle-slider {
+  --at-apply: bg-primary;
+}
+
+.rule-toggle input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+.rule-pattern {
+  --at-apply: flex-1 font-mono text-sm truncate min-w-0;
+}
+
+.rule-pattern.disabled {
+  --at-apply: op-40 line-through;
+}
+
+.rule-type {
+  --at-apply: px-2 py-0.5 rounded text-xs font-medium flex-shrink-0;
+}
+
+.rule-type.exclude {
+  --at-apply: bg-red-500/20 text-red-400;
+}
+
+.rule-type.include {
+  --at-apply: bg-green-500/20 text-green-400;
+}
+
+.rule-type.require {
+  --at-apply: bg-blue-500/20 text-blue-400;
+}
+
+.rule-scope {
+  --at-apply: flex items-center gap-1 text-xs op-60 flex-shrink-0;
+}
+
+.rule-scope.source-specific {
+  --at-apply: text-primary op-80;
+}
+
+.rule-scope .source-icon {
+  --at-apply: w-4 h-4 rounded bg-cover inline-block;
+}
+
+.rule-delete {
+  --at-apply: p-2 rounded hover:bg-red-500/20 text-red-400 transition-colors flex-shrink-0 text-base;
+}
+
+/* Add Rule */
+.add-rule {
+  --at-apply: flex gap-2 p-3 bg-neutral-400/5 rounded-lg border border-dashed border-neutral-400/20;
+}
+
+.add-rule-input {
+  --at-apply: flex-1 px-3 py-2 bg-neutral-400/10 rounded-lg outline-none text-sm;
+  --at-apply: focus:ring-2 focus:ring-primary/50;
+}
+
+.add-rule-type {
+  --at-apply: px-3 py-2 bg-neutral-400/10 rounded-lg outline-none text-sm cursor-pointer;
+}
+
+.add-rule-scope {
+  --at-apply: px-3 py-2 bg-neutral-400/10 rounded-lg outline-none text-sm cursor-pointer max-w-40;
+}
+
+.add-rule-btn {
+  --at-apply: flex items-center gap-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium;
+  --at-apply: hover:bg-primary/80 transition-colors;
+}
+
+/* Syntax Help */
+.syntax-help {
+  --at-apply: mt-4 p-3 bg-neutral-400/5 rounded-lg text-xs op-70;
+}
+
+.syntax-title {
+  --at-apply: font-medium mb-2;
+}
+
+.syntax-help ul {
+  --at-apply: list-disc list-inside flex flex-col gap-1;
+}
+
+.syntax-note {
+  --at-apply: mt-2 pt-2 border-t border-neutral-400/20 text-xs op-60;
+}
+
+/* Source Mode */
+.source-mode {
+  --at-apply: flex flex-col gap-4;
+}
+
+.source-mode-info {
+  --at-apply: flex items-center gap-2 text-sm op-70 p-2 bg-blue-500/10 rounded-lg;
+}
+
+.rules-section {
+  --at-apply: flex flex-col gap-2;
+}
+
+.rules-section-title {
+  --at-apply: flex items-center gap-2 text-sm font-medium op-80;
+}
+
+.rules-count {
+  --at-apply: ml-auto px-2 py-0.5 bg-neutral-400/20 rounded-full text-xs;
+}
+
+.no-rules-small {
+  --at-apply: text-sm op-50 py-4 text-center;
+}
+
+.rules-section.global-rules {
+  --at-apply: mt-2 pt-4 border-t border-neutral-400/20;
+}
+
+.rule-item.compact {
+  --at-apply: p-1.5 gap-2;
+}
+
+.rule-item.global-in-source {
+  --at-apply: op-60;
+}
+
+.add-rule.compact {
+  --at-apply: p-2;
+}

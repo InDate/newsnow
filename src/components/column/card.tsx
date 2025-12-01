@@ -5,6 +5,8 @@ import { useWindowSize } from "react-use"
 import { forwardRef, useImperativeHandle } from "react"
 import { OverlayScrollbar } from "../common/overlay-scrollbar"
 import { safeParseString } from "~/utils"
+import { useFilteredItems } from "~/hooks/useFilter"
+import { useFilterModal } from "~/hooks/useFilterModal"
 
 export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
   id: SourceID
@@ -103,6 +105,8 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
   })
 
   const { isFocused, toggleFocus } = useFocusWith(id)
+  const filteredItems = useFilteredItems(data?.items, id)
+  const { open: openFilterModal } = useFilterModal()
 
   return (
     <>
@@ -138,6 +142,12 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
           />
           <button
             type="button"
+            className="btn i-ph:funnel-duotone"
+            onClick={() => openFilterModal(id)}
+            title="Filter this source"
+          />
+          <button
+            type="button"
             className={$("btn", isFocused ? "i-ph:star-fill" : "i-ph:star-duotone")}
             onClick={toggleFocus}
           />
@@ -163,7 +173,7 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
         defer
       >
         <div className={$("transition-opacity-500", isFetching && "op-20")}>
-          {!!data?.items?.length && (sources[id].type === "hottest" ? <NewsListHot items={data.items} /> : <NewsListTimeLine items={data.items} />)}
+          {!!filteredItems?.length && (sources[id].type === "hottest" ? <NewsListHot items={filteredItems} /> : <NewsListTimeLine items={filteredItems} />)}
         </div>
       </OverlayScrollbar>
     </>
@@ -172,9 +182,9 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
 
 function UpdatedTime({ isError, updatedTime }: { updatedTime: any, isError: boolean }) {
   const relativeTime = useRelativeTime(updatedTime ?? "")
-  if (relativeTime) return `${relativeTime}更新`
-  if (isError) return "获取失败"
-  return "加载中..."
+  if (relativeTime) return `Updated ${relativeTime}`
+  if (isError) return "Failed"
+  return "Loading..."
 }
 
 function DiffNumber({ diff }: { diff: number }) {
