@@ -3,7 +3,7 @@
 English | [简体中文](README.zh-CN.md) | [日本語](README.ja-JP.md)
 
 > [!NOTE]
-> This is a demo version currently supporting Chinese only. A full-featured version with better customization and English content support will be released later.
+> This fork adds English UI localization and 17 international English news sources.
 
 **_Elegant reading of real-time and hottest news_**
 
@@ -11,10 +11,28 @@ English | [简体中文](README.zh-CN.md) | [日本語](README.ja-JP.md)
 
 - Clean and elegant UI design for optimal reading experience
 - Real-time updates on trending news
+- **English UI** with localized navigation, time formatting, and notifications
+- **17 English news sources** across Tech, World, Finance, and Sports categories
+- **Content filtering** with DSL support - exclude, include, or require keywords globally or per-source
 - GitHub OAuth login with data synchronization
 - 30-minute default cache duration (logged-in users can force refresh)
 - Adaptive scraping interval (minimum 2 minutes) based on source update frequency to optimize resource usage and prevent IP bans
-- support MCP server
+- Support MCP server
+
+## English News Sources
+
+### Tech
+- Hacker News, GitHub Trending, Product Hunt
+- The Verge, Ars Technica, TechCrunch, Wired, Slashdot, Lobsters
+
+### World News
+- Reddit, BBC News, Reuters, AP News, NPR, The Guardian, CNN, Al Jazeera
+
+### Finance
+- Yahoo Finance, MarketWatch
+
+### Sports
+- ESPN
 
 ```json
 {
@@ -111,12 +129,8 @@ For detailed instructions on how to add new sources, see [CONTRIBUTING.md](CONTR
 
 ## Roadmap
 
-- Add **multi-language support** (English, Chinese, more to come).
 - Improve **personalization options** (category-based news, saved preferences).
-- Expand **data sources** to cover global news in multiple languages.
-
-**_release when ready_**
-![](https://testmnbbs.oss-cn-zhangjiakou.aliyuncs.com/pic/20250328172146_rec_.gif?x-oss-process=base_webp)
+- Add more international news sources.
 
 ## Contributing
 
