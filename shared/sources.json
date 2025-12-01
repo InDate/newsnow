@@ -315,6 +315,134 @@
     "color": "orange",
     "interval": 600000
   },
+  "reddit": {
+    "name": "Reddit",
+    "type": "hottest",
+    "column": "world",
+    "home": "https://www.reddit.com/",
+    "color": "orange",
+    "interval": 600000
+  },
+  "bbc": {
+    "name": "BBC News",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://www.bbc.com/news",
+    "color": "red",
+    "interval": 1800000
+  },
+  "theverge": {
+    "name": "The Verge",
+    "type": "realtime",
+    "column": "tech",
+    "home": "https://www.theverge.com/",
+    "color": "purple",
+    "interval": 1800000
+  },
+  "arstechnica": {
+    "name": "Ars Technica",
+    "type": "realtime",
+    "column": "tech",
+    "home": "https://arstechnica.com/",
+    "color": "orange",
+    "interval": 1800000
+  },
+  "techcrunch": {
+    "name": "TechCrunch",
+    "type": "realtime",
+    "column": "tech",
+    "home": "https://techcrunch.com/",
+    "color": "green",
+    "interval": 1800000
+  },
+  "wired": {
+    "name": "Wired",
+    "type": "realtime",
+    "column": "tech",
+    "home": "https://www.wired.com/",
+    "color": "slate",
+    "interval": 1800000
+  },
+  "slashdot": {
+    "name": "Slashdot",
+    "type": "realtime",
+    "column": "tech",
+    "home": "https://slashdot.org/",
+    "color": "teal",
+    "interval": 1800000
+  },
+  "reuters": {
+    "name": "Reuters",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://www.reuters.com/",
+    "color": "orange",
+    "interval": 1800000
+  },
+  "apnews": {
+    "name": "AP News",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://apnews.com/",
+    "color": "red",
+    "interval": 1800000
+  },
+  "npr": {
+    "name": "NPR",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://www.npr.org/",
+    "color": "blue",
+    "interval": 1800000
+  },
+  "theguardian": {
+    "name": "The Guardian",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://www.theguardian.com/",
+    "color": "blue",
+    "interval": 1800000
+  },
+  "cnn": {
+    "name": "CNN",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://www.cnn.com/",
+    "color": "red",
+    "interval": 1800000
+  },
+  "aljazeera": {
+    "name": "Al Jazeera",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://www.aljazeera.com/",
+    "color": "amber",
+    "interval": 1800000
+  },
+  "yahoofinance": {
+    "name": "Yahoo Finance",
+    "type": "realtime",
+    "column": "finance",
+    "home": "https://finance.yahoo.com/",
+    "color": "purple",
+    "interval": 1800000
+  },
+  "marketwatch": {
+    "name": "MarketWatch",
+    "type": "realtime",
+    "column": "finance",
+    "home": "https://www.marketwatch.com/",
+    "color": "green",
+    "interval": 1800000
+  },
+  "espn": {
+    "name": "ESPN",
+    "type": "realtime",
+    "column": "world",
+    "home": "https://www.espn.com/",
+    "color": "red",
+    "interval": 1800000
+  },
   "producthunt": {
     "name": "Product Hunt",
     "type": "hottest",
