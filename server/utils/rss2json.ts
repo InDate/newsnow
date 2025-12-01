@@ -4,7 +4,8 @@ import type { RSSInfo } from "../types"
 export async function rss2json(url: string): Promise<RSSInfo | undefined> {
   if (!/^https?:\/\/[^\s$.?#].\S*/i.test(url)) return
 
-  const data = await myFetch(url)
+  // Force text response type to handle application/atom+xml and other XML content types
+  const data = await myFetch(url, { responseType: "text" })
 
   const xml = new XMLParser({
     attributeNamePrefix: "",

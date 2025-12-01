@@ -1,56 +1,23 @@
-import process from "node:process"
+import * as cheerio from "cheerio"
 import type { NewsItem } from "@shared/types"
 
 export default defineSource(async () => {
-  const apiToken = process.env.PRODUCTHUNT_API_TOKEN
-  const token = `Bearer ${apiToken}`
-  if (!apiToken) {
-    throw new Error("PRODUCTHUNT_API_TOKEN is not set")
-  }
-  const query = `
-    query {
-      posts(first: 30, order: VOTES) {
-        edges {
-          node {
-            id
-            name
-            tagline
-            votesCount
-            url
-            slug
-          }
-        }
-      }
-    }
-  `
+  const data = await rss2json("https://www.producthunt.com/feed")
+  if (!data?.items.length) throw new Error("Cannot fetch ProductHunt feed")
 
-  const response: any = await myFetch("https://api.producthunt.com/v2/api/graphql", {
-    method: "POST",
-    headers: {
-      "Authorization": token,
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    },
-    body: JSON.stringify({ query }),
+  return data.items.map((item) => {
+    // Extract tagline from HTML content (first <p> tag)
+    let tagline = ""
+    if (item.content) {
+      const $ = cheerio.load(item.content)
+      tagline = $("p").first().text().trim()
+    }
+
+    return {
+      id: item.id,
+      title: tagline ? `${item.title}: ${tagline}` : item.title,
+      url: item.link,
+      pubDate: item.created,
+    } as NewsItem
   })
-
-  const news: NewsItem[] = []
-  const posts = response?.data?.posts?.edges || []
-
-  for (const edge of posts) {
-    const post = edge.node
-    if (post.id && post.name) {
-      news.push({
-        id: post.id,
-        title: post.name,
-        url: post.url || `https://www.producthunt.com/posts/${post.slug}`,
-        extra: {
-          info: ` △︎ ${post.votesCount || 0}`,
-          hover: post.tagline,
-        },
-      })
-    }
-  }
-
-  return news
 })
