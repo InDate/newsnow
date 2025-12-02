@@ -4,9 +4,11 @@ import { AnimatePresence, motion, useInView } from "framer-motion"
 import { useWindowSize } from "react-use"
 import { forwardRef, useImperativeHandle } from "react"
 import { OverlayScrollbar } from "../common/overlay-scrollbar"
+import { SwipeableArticle } from "./swipeable-article"
 import { safeParseString } from "~/utils"
 import { useFilterModal } from "~/hooks/useFilterModal"
 import { filterConfigAtom } from "~/atoms/filterAtom"
+import { dismissedArticlesAtom, isDismissedKey } from "~/atoms/dismissedAtom"
 
 export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
   id: SourceID
@@ -194,7 +196,7 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
         defer
       >
         <div className={$("transition-opacity-500", isFetching && "op-20")}>
-          {!!data?.items?.length && (sources[id].type === "hottest" ? <NewsListHot items={data.items} /> : <NewsListTimeLine items={data.items} />)}
+          {!!data?.items?.length && (sources[id].type === "hottest" ? <NewsListHot sourceId={id} items={data.items} /> : <NewsListTimeLine sourceId={id} items={data.items} />)}
         </div>
       </OverlayScrollbar>
     </>
@@ -256,68 +258,121 @@ function NewsUpdatedTime({ date }: { date: string | number }) {
   const relativeTime = useRelativeTime(date)
   return <>{relativeTime}</>
 }
-function NewsListHot({ items }: { items: NewsItem[] }) {
+function NewsListHot({ sourceId, items }: { sourceId: SourceID, items: NewsItem[] }) {
   const { width } = useWindowSize()
+  const [dismissed] = useAtom(dismissedArticlesAtom)
+
+  // Filter out dismissed items
+  const visibleItems = items?.filter(item => !dismissed.has(isDismissedKey(sourceId, item.id))) ?? []
+
   return (
     <ol className="flex flex-col gap-2">
-      {items?.map((item, i) => (
-        <a
-          href={width < 768 ? item.mobileUrl || item.url : item.url}
-          target="_blank"
-          key={item.id}
-          title={item.extra?.hover}
-          className={$(
-            "flex gap-2 items-center items-stretch relative cursor-pointer [&_*]:cursor-pointer transition-all",
-            "hover:bg-neutral-400/10 rounded-md pr-1 visited:(text-neutral-400)",
-          )}
-        >
-          <span className={$("bg-neutral-400/10 min-w-6 flex justify-center items-center rounded-md text-sm")}>
-            {i + 1}
-          </span>
-          {!!item.extra?.diff && <DiffNumber diff={item.extra.diff} />}
-          <span className="self-start line-height-none">
-            <span className="mr-2 text-base">
-              {item.title}
-            </span>
-            <span className="text-xs text-neutral-400/80 truncate align-middle">
-              <ExtraInfo item={item} />
-            </span>
-          </span>
-        </a>
-      ))}
+      <AnimatePresence mode="popLayout">
+        {visibleItems.map((item, i) => (
+          <motion.div
+            key={item.id}
+            layout
+            initial={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{
+              layout: {
+                type: "spring",
+                stiffness: 500,
+                damping: 35,
+                delay: i * 0.03,
+              },
+              opacity: { duration: 0.15 },
+              height: { duration: 0.2 },
+            }}
+            className="overflow-hidden"
+          >
+            <SwipeableArticle item={item} sourceId={sourceId}>
+              <a
+                href={width < 768 ? item.mobileUrl || item.url : item.url}
+                target="_blank"
+                title={item.extra?.hover}
+                className={$(
+                  "flex gap-2 items-center items-stretch relative cursor-pointer [&_*]:cursor-pointer transition-all",
+                  "hover:bg-neutral-400/10 rounded-md pr-1 visited:(text-neutral-400)",
+                )}
+              >
+                <span className={$("bg-neutral-400/10 min-w-6 flex justify-center items-center rounded-md text-sm")}>
+                  {i + 1}
+                </span>
+                {!!item.extra?.diff && <DiffNumber diff={item.extra.diff} />}
+                <span className="self-start line-height-none">
+                  <span className="mr-2 text-base">
+                    {item.title}
+                  </span>
+                  <span className="text-xs text-neutral-400/80 truncate align-middle">
+                    <ExtraInfo item={item} />
+                  </span>
+                </span>
+              </a>
+            </SwipeableArticle>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </ol>
   )
 }
 
-function NewsListTimeLine({ items }: { items: NewsItem[] }) {
+function NewsListTimeLine({ sourceId, items }: { sourceId: SourceID, items: NewsItem[] }) {
   const { width } = useWindowSize()
+  const [dismissed] = useAtom(dismissedArticlesAtom)
+
+  // Filter out dismissed items
+  const visibleItems = items?.filter(item => !dismissed.has(isDismissedKey(sourceId, item.id))) ?? []
+
   return (
     <ol className="border-s border-neutral-400/50 flex flex-col ml-1">
-      {items?.map(item => (
-        <li key={`${item.id}-${item.pubDate || item?.extra?.date || ""}`} className="flex flex-col">
-          <span className="flex items-center gap-1 text-neutral-400/50 ml--1px">
-            <span className="">-</span>
-            <span className="text-xs text-neutral-400/80">
-              {(item.pubDate || item?.extra?.date) && <NewsUpdatedTime date={(item.pubDate || item?.extra?.date)!} />}
-            </span>
-            <span className="text-xs text-neutral-400/80">
-              <ExtraInfo item={item} />
-            </span>
-          </span>
-          <a
-            className={$(
-              "ml-2 px-1 hover:bg-neutral-400/10 rounded-md visited:(text-neutral-400/80)",
-              "cursor-pointer [&_*]:cursor-pointer transition-all",
-            )}
-            href={width < 768 ? item.mobileUrl || item.url : item.url}
-            title={item.extra?.hover}
-            target="_blank"
-            rel="noopener noreferrer"
+      <AnimatePresence mode="popLayout">
+        {visibleItems.map((item, i) => (
+          <motion.div
+            key={`${item.id}-${item.pubDate || item?.extra?.date || ""}`}
+            layout
+            initial={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{
+              layout: {
+                type: "spring",
+                stiffness: 500,
+                damping: 35,
+                delay: i * 0.03,
+              },
+              opacity: { duration: 0.15 },
+              height: { duration: 0.2 },
+            }}
+            className="overflow-hidden"
           >
-            {item.title}
-          </a>
-        </li>
-      ))}
+            <SwipeableArticle item={item} sourceId={sourceId}>
+              <li className="flex flex-col">
+                <span className="flex items-center gap-1 text-neutral-400/50 ml--1px">
+                  <span className="">-</span>
+                  <span className="text-xs text-neutral-400/80">
+                    {(item.pubDate || item?.extra?.date) && <NewsUpdatedTime date={(item.pubDate || item?.extra?.date)!} />}
+                  </span>
+                  <span className="text-xs text-neutral-400/80">
+                    <ExtraInfo item={item} />
+                  </span>
+                </span>
+                <a
+                  className={$(
+                    "ml-2 px-1 hover:bg-neutral-400/10 rounded-md visited:(text-neutral-400/80)",
+                    "cursor-pointer [&_*]:cursor-pointer transition-all",
+                  )}
+                  href={width < 768 ? item.mobileUrl || item.url : item.url}
+                  title={item.extra?.hover}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.title}
+                </a>
+              </li>
+            </SwipeableArticle>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </ol>
   )
 }

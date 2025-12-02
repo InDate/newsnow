@@ -7,6 +7,8 @@ body,
   height: 100vh;
   margin: 0;
   padding: 0;
+  /* Prevent browser back/forward gesture on horizontal swipe */
+  overscroll-behavior-x: none;
 }
 
 @font-face {
